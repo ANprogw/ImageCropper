@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import viteLogo from '../assets/vite.svg'
-import heroImg from '../assets/hero.png'
-import vueLogo from '../assets/vue.svg'
+  import { ref } from "vue";
+  import viteLogo from "../assets/vite.svg";
+  import heroImg from "../assets/hero.png";
+  import vueLogo from "../assets/vue.svg";
 
-const count = ref(0)
+  const count = ref(0);
 </script>
 
 <template>
@@ -89,6 +89,10 @@ const count = ref(0)
       </ul>
     </div>
   </section>
+
+  <v-container>
+    <v-btn color="primary">Vuetify is working</v-btn>
+  </v-container>
 
   <div class="ticks"></div>
   <section id="spacer"></section>
