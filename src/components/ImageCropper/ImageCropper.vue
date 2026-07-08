@@ -2,36 +2,69 @@
   <div class="image-cropper">
     <v-container>
       <ImageContainer />
-
-      <v-slider />
-      <v-slider />
-      <v-slider />
+      <ImageFilters />
 
       <v-container>
-        <v-btn color="secondary" @click="undoAction">Undo</v-btn>
-        <v-btn color="secondary" @click="redoAction">Redo</v-btn>
-      </v-container>
+        <input
+          ref="fileInput"
+          type="file"
+          accept="image/*"
+          hidden
+          @change="uploadImage"
+        />
 
-      <v-container>
-        <v-btn color="primary" @click="importImage">Choose image</v-btn>
-        <v-btn color="secondary" @click="exportImage">Download</v-btn>
+        <v-btn color="primary" @click="openFilePicker">Choose image</v-btn>
+        <v-btn
+          color="secondary"
+          :disabled="!cropperStore.currentImage"
+          @click="downloadImage"
+          >Download</v-btn
+        >
       </v-container>
     </v-container>
   </div>
 </template>
 
 <script setup lang="ts">
-  import ImageContainer from "../ImageContainer/ImageContainer.vue";
+  import { ref } from "vue";
+
+  import { useCropperStore } from "@stores/cropper.ts";
+
+  import ImageContainer from "@components/ImageContainer/ImageContainer.vue";
+  import ImageFilters from "@components/ImageFilters/ImageFilters.vue";
 
   defineOptions({ name: "ImageCropper" });
 
-  function undoAction() {}
+  const cropperStore = useCropperStore();
 
-  function redoAction() {}
+  const fileInput = ref<HTMLInputElement>();
 
-  function importImage() {}
+  function openFilePicker() {
+    fileInput.value?.click();
+  }
 
-  function exportImage() {}
+  function uploadImage(event: Event) {
+    const input = event.target as HTMLInputElement;
+
+    if (!input.files?.length) return;
+
+    const imageBlob = input.files[0];
+
+    cropperStore.addToHistory(imageBlob);
+  }
+
+  function downloadImage() {
+    if (!cropperStore.currentImage) return;
+
+    const url = URL.createObjectURL(cropperStore.currentImage);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "cropped-image.png";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  }
 </script>
 
 <style scoped lang="scss" src="./ImageCropper.scss" />
