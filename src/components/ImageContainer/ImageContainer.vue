@@ -51,7 +51,6 @@
 
   const cropperStore = useCropperStore();
 
-  const cropper = ref();
   const imageRef = ref<HTMLImageElement>();
 
   watch(
@@ -70,16 +69,16 @@
   });
 
   function initCropper() {
-    cropper.value?.destroy();
+    cropperStore.cropperInstance?.destroy();
 
-    cropper.value = new Cropper(imageRef.value!, {
+    cropperStore.cropperInstance = new Cropper(imageRef.value!, {
       container: ".image-container__canvas",
     });
   }
 
   async function cropImage() {
     const selection =
-      cropper.value.container.querySelector("cropper-selection");
+      cropperStore.cropperInstance.container.querySelector("cropper-selection");
 
     const canvas = await selection.$toCanvas();
 
@@ -88,6 +87,12 @@
     });
 
     if (!imageBlob) return;
+
+    // const imageItem = {
+    //   id: cropperStore.imageHistory.length,
+    //   blob: imageBlob,
+    //   filters: cropperStore.previewImageFilters,
+    // };
 
     cropperStore.addToHistory(imageBlob);
 

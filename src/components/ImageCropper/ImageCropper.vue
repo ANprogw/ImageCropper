@@ -50,6 +50,12 @@
 
     const imageBlob = input.files[0];
 
+    // const imageItem = {
+    //   id: cropperStore.imageHistory.length || 0,
+    //   blob: imageBlob,
+    //   filters: cropperStore.previewImageFilters,
+    // };
+
     cropperStore.addToHistory(imageBlob);
   }
 

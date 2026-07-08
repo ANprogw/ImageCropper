@@ -1,9 +1,28 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 
+interface ImageFilters {
+  brightness: number;
+  contrast: number;
+  saturation: number;
+}
+
+// interface ImageItem {
+//   id: number;
+//   blob: Blob;
+//   filters: ImageFilters;
+// }
+
 export const useCropperStore = defineStore("cropper", () => {
+  const cropperInstance = ref();
+
   const currentImage = ref<Blob | null>(null);
   const imageHistory = ref<Blob[]>([]);
+  const previewImageFilters = ref<ImageFilters>({
+    brightness: 100,
+    contrast: 100,
+    saturation: 100,
+  });
 
   const currentImageSrc = computed(() =>
     currentImage.value ? URL.createObjectURL(currentImage.value) : "",
@@ -29,6 +48,14 @@ export const useCropperStore = defineStore("cropper", () => {
       currentImage.value === imageHistory.value[imageHistory.value.length - 1],
   );
 
+  function resetFilters() {
+    previewImageFilters.value = {
+      brightness: 100,
+      contrast: 100,
+      saturation: 100,
+    };
+  }
+
   function addToHistory(blob: Blob) {
     if (currentImageIndex.value !== imageHistory.value.length - 1) {
       imageHistory.value.splice(currentImageIndex.value + 1);
@@ -43,8 +70,9 @@ export const useCropperStore = defineStore("cropper", () => {
       return;
     }
 
-    imageHistory.value.splice(1);
     currentImage.value = imageHistory.value[0];
+    imageHistory.value.splice(1);
+    resetFilters();
   }
 
   function undoAction() {
@@ -64,14 +92,17 @@ export const useCropperStore = defineStore("cropper", () => {
   }
 
   return {
+    cropperInstance,
     currentImage,
     imageHistory,
+    previewImageFilters,
     currentImageSrc,
     isImageHistoryEmpty,
     isImageHistoryHasTwoItems,
     isResetHistoryDisabled,
     isUndoActionDisabled,
     isRedoActionDisabled,
+    resetFilters,
     addToHistory,
     resetHistory,
     undoAction,
