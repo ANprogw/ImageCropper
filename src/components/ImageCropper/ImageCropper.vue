@@ -29,8 +29,6 @@
 <script setup lang="ts">
   import { ref } from "vue";
 
-  import type { IImageFilters } from "@/types/image";
-
   import { useCropperStore } from "@stores/cropper";
 
   import ImageContainer from "@components/ImageContainer/ImageContainer.vue";
@@ -64,53 +62,8 @@
     cropperStore.addToHistory(imageItem);
   }
 
-  // async function applyImageFilters(
-  //   blob: Blob,
-  //   filters: IImageFilters,
-  // ): Promise<Blob | null> {
-  //   const imageUrl = URL.createObjectURL(blob);
-
-  //   try {
-  //     const img = new Image();
-  //     img.src = imageUrl;
-
-  //     await img.decode();
-
-  //     const canvas = document.createElement("canvas");
-  //     canvas.width = img.width;
-  //     canvas.height = img.height;
-
-  //     const ctx = canvas.getContext("2d");
-
-  //     if (!ctx) return null;
-
-  //     ctx.filter = `
-  //       brightness(${filters.brightness}%)
-  //       contrast(${filters.contrast}%)
-  //       saturate(${filters.saturation}%)
-  //     `;
-
-  //     ctx.drawImage(img, 0, 0);
-
-  //     return await new Promise<Blob | null>((resolve) => {
-  //       canvas.toBlob(resolve, "image/png");
-  //     });
-  //   } finally {
-  //     URL.revokeObjectURL(imageUrl);
-  //   }
-  // }
-
   async function downloadImage() {
     if (!cropperStore.currentImage?.blob) return;
-
-    // const filteredBlob = await applyImageFilters(
-    //   cropperStore.currentImage.blob,
-    //   cropperStore.currentImage.filters,
-    // );
-
-    // if (!filteredBlob) return;
-
-    // const url = URL.createObjectURL(filteredBlob);
 
     const url = URL.createObjectURL(cropperStore.currentImage.blob);
 
