@@ -2,7 +2,7 @@
 
 Browser image editor that can crop and apply filter to your image (test task for LiveArt)
 
-Technoligies used: 
+Technologies used: 
 - Vue 3
 - Vuetify 3
 - Pinia 
