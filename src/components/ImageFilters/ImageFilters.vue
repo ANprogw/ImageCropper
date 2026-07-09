@@ -24,19 +24,48 @@
       thumb-label
     />
 
-    <v-btn color="primary" @click="applyFilters">Apply Filters</v-btn>
-    <v-btn color="secondary" @click="resetFilters">Reset Filters</v-btn>
+    <v-btn
+      color="primary"
+      :disabled="isApplyingFiltersDisabled"
+      @click="applyFilters"
+    >
+      Apply Filters
+    </v-btn>
+
+    <v-btn
+      color="secondary"
+      :disabled="isResettingFiltersDisabled"
+      @click="resetFilters"
+      >Reset Filters</v-btn
+    >
   </div>
 </template>
 
 <script setup lang="ts">
-  import { watch } from "vue";
+  import { computed, watch } from "vue";
 
-  import { useCropperStore } from "@stores/cropper.ts";
+  import { useCropperStore } from "@stores/cropper";
+  import { deepEqual } from "@helpers/utils/helpers.util";
 
   defineOptions({ name: "ImageFilters" });
 
   const cropperStore = useCropperStore();
+
+  const isApplyingFiltersDisabled = computed(() => {
+    if (!cropperStore.currentImage) return true;
+
+    return deepEqual(
+      cropperStore.currentImage.filters,
+      cropperStore.previewImageFilters,
+    );
+  });
+
+  const isResettingFiltersDisabled = computed(() => {
+    return deepEqual(
+      cropperStore.defaultImageFilters,
+      cropperStore.previewImageFilters,
+    );
+  });
 
   watch(
     [
@@ -64,12 +93,15 @@
   }
 
   function applyFilters() {
-    // const imageItem = {
-    //   id: cropperStore.imageHistory.length,
-    //   blob: cropperStore.currentImage.blob,
-    //   filters: cropperStore.previewImageFilters,
-    // };
-    // cropperStore.addToHistory(imageItem);
+    if (!cropperStore.currentImage) return;
+
+    const imageItem = {
+      id: cropperStore.imageHistory.length,
+      blob: cropperStore.currentImage.blob,
+      filters: { ...cropperStore.previewImageFilters },
+    };
+
+    cropperStore.addToHistory(imageItem);
   }
 
   function resetFilters() {

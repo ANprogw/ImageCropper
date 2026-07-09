@@ -16,6 +16,7 @@ export default defineConfig({
       "@composables": fileURLToPath(
         new URL("./src/composables", import.meta.url),
       ),
+      "@helpers": fileURLToPath(new URL("./src/helpers", import.meta.url)),
       "@plugins": fileURLToPath(new URL("./src/plugins", import.meta.url)),
       "@stores": fileURLToPath(new URL("./src/stores", import.meta.url)),
     },

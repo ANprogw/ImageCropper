@@ -1,72 +1,67 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 
-interface ImageFilters {
-  brightness: number;
-  contrast: number;
-  saturation: number;
-}
+import type { IImageFilters, IImageItem } from "@/types/image";
 
-// interface ImageItem {
-//   id: number;
-//   blob: Blob;
-//   filters: ImageFilters;
-// }
+const defaultImageFilters: IImageFilters = {
+  brightness: 100,
+  contrast: 100,
+  saturation: 100,
+};
 
 export const useCropperStore = defineStore("cropper", () => {
   const cropperInstance = ref();
 
-  const currentImage = ref<Blob | null>(null);
-  const imageHistory = ref<Blob[]>([]);
-  const previewImageFilters = ref<ImageFilters>({
-    brightness: 100,
-    contrast: 100,
-    saturation: 100,
-  });
+  const currentImage = ref<IImageItem | null>(null);
+  const imageHistory = ref<IImageItem[]>([]);
+  const previewImageFilters = ref<IImageFilters>({ ...defaultImageFilters });
 
   const currentImageSrc = computed(() =>
-    currentImage.value ? URL.createObjectURL(currentImage.value) : "",
+    currentImage.value ? URL.createObjectURL(currentImage.value.blob) : "",
+  );
+  const currentImageIndex = computed(() =>
+    imageHistory.value.findIndex((item) => item === currentImage.value),
   );
   const isImageHistoryEmpty = computed(() => imageHistory.value.length === 0);
   const isImageHistoryHasTwoItems = computed(
     () => imageHistory.value.length >= 2,
   );
-  const currentImageIndex = computed(() =>
-    imageHistory.value.findIndex((item) => item === currentImage.value),
-  );
-  const isResetHistoryDisabled = computed(
+  const isResetActionsDisabled = computed(
     () => !isImageHistoryHasTwoItems.value,
   );
   const isUndoActionDisabled = computed(
     () =>
       !isImageHistoryHasTwoItems.value ||
-      currentImage.value === imageHistory.value[0],
+      currentImage.value?.id === imageHistory.value[0].id,
   );
   const isRedoActionDisabled = computed(
     () =>
       !isImageHistoryHasTwoItems.value ||
-      currentImage.value === imageHistory.value[imageHistory.value.length - 1],
+      currentImage.value?.id ===
+        imageHistory.value[imageHistory.value.length - 1].id,
   );
 
-  function resetFilters() {
-    previewImageFilters.value = {
-      brightness: 100,
-      contrast: 100,
-      saturation: 100,
-    };
-  }
-
-  function addToHistory(blob: Blob) {
+  function addToHistory(item: IImageItem) {
     if (currentImageIndex.value !== imageHistory.value.length - 1) {
       imageHistory.value.splice(currentImageIndex.value + 1);
     }
 
-    imageHistory.value.push(blob);
-    currentImage.value = blob;
+    imageHistory.value.push(item);
+    currentImage.value = item;
   }
 
-  function resetHistory() {
-    if (isResetHistoryDisabled.value) {
+  function clearHistory() {
+    currentImage.value = null;
+    imageHistory.value = [];
+    resetFilters();
+  }
+
+  function resetFilters() {
+    previewImageFilters.value = { ...defaultImageFilters };
+  }
+
+  function resetActions() {
+    if (isResetActionsDisabled.value) {
       return;
     }
 
@@ -81,6 +76,7 @@ export const useCropperStore = defineStore("cropper", () => {
     }
 
     currentImage.value = imageHistory.value[currentImageIndex.value - 1];
+    previewImageFilters.value = { ...currentImage.value.filters };
   }
 
   function redoAction() {
@@ -89,22 +85,25 @@ export const useCropperStore = defineStore("cropper", () => {
     }
 
     currentImage.value = imageHistory.value[currentImageIndex.value + 1];
+    previewImageFilters.value = { ...currentImage.value.filters };
   }
 
   return {
     cropperInstance,
     currentImage,
     imageHistory,
+    defaultImageFilters,
     previewImageFilters,
     currentImageSrc,
     isImageHistoryEmpty,
     isImageHistoryHasTwoItems,
-    isResetHistoryDisabled,
+    isResetActionsDisabled,
     isUndoActionDisabled,
     isRedoActionDisabled,
-    resetFilters,
     addToHistory,
-    resetHistory,
+    clearHistory,
+    resetFilters,
+    resetActions,
     undoAction,
     redoAction,
   };

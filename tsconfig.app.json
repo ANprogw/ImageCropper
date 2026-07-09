@@ -11,8 +11,9 @@
       "@assets/*": ["src/assets/*"],
       "@components/*": ["src/components/*"],
       "@composables/*": ["src/composables/*"],
-      "@stores/*": ["src/stores/*"],
-      "@plugins/*": ["src/plugins/*"]
+      "@helpers/*": ["src/helpers/*"],
+      "@plugins/*": ["src/plugins/*"],
+      "@stores/*": ["src/stores/*"]
     },
 
     /* Linting */

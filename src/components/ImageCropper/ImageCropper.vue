@@ -18,8 +18,9 @@
           color="secondary"
           :disabled="!cropperStore.currentImage"
           @click="downloadImage"
-          >Download</v-btn
         >
+          Download
+        </v-btn>
       </v-container>
     </v-container>
   </div>
@@ -28,7 +29,9 @@
 <script setup lang="ts">
   import { ref } from "vue";
 
-  import { useCropperStore } from "@stores/cropper.ts";
+  import type { IImageFilters } from "@/types/image";
+
+  import { useCropperStore } from "@stores/cropper";
 
   import ImageContainer from "@components/ImageContainer/ImageContainer.vue";
   import ImageFilters from "@components/ImageFilters/ImageFilters.vue";
@@ -44,29 +47,76 @@
   }
 
   function uploadImage(event: Event) {
+    cropperStore.clearHistory();
+
     const input = event.target as HTMLInputElement;
 
     if (!input.files?.length) return;
 
     const imageBlob = input.files[0];
 
-    // const imageItem = {
-    //   id: cropperStore.imageHistory.length || 0,
-    //   blob: imageBlob,
-    //   filters: cropperStore.previewImageFilters,
-    // };
+    const imageItem = {
+      id: 0,
+      blob: imageBlob,
+      filters: { ...cropperStore.previewImageFilters },
+    };
 
-    cropperStore.addToHistory(imageBlob);
+    cropperStore.addToHistory(imageItem);
   }
 
-  function downloadImage() {
-    if (!cropperStore.currentImage) return;
+  async function applyImageFilters(
+    blob: Blob,
+    filters: IImageFilters,
+  ): Promise<Blob | null> {
+    const imageUrl = URL.createObjectURL(blob);
 
-    const url = URL.createObjectURL(cropperStore.currentImage);
+    try {
+      const img = new Image();
+      img.src = imageUrl;
+
+      await img.decode();
+
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) return null;
+
+      ctx.filter = `
+        brightness(${filters.brightness}%)
+        contrast(${filters.contrast}%)
+        saturate(${filters.saturation}%)
+      `;
+
+      ctx.drawImage(img, 0, 0);
+
+      return await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(resolve, "image/png");
+      });
+    } finally {
+      URL.revokeObjectURL(imageUrl);
+    }
+  }
+
+  async function downloadImage() {
+    const imageItem = cropperStore.currentImage;
+
+    if (!imageItem) return;
+
+    const filteredBlob = await applyImageFilters(
+      imageItem.blob,
+      imageItem.filters,
+    );
+
+    if (!filteredBlob) return;
+
+    const url = URL.createObjectURL(filteredBlob);
 
     const a = document.createElement("a");
     a.href = url;
-    a.download = "cropped-image.png";
+    a.download = "edited-image.png";
     a.click();
 
     URL.revokeObjectURL(url);

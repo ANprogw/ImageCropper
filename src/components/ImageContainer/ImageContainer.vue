@@ -15,7 +15,7 @@
 
       <v-btn
         color="warning"
-        :disabled="cropperStore.isResetHistoryDisabled"
+        :disabled="cropperStore.isResetActionsDisabled"
         @click="resetAction"
       >
         Reset
@@ -45,7 +45,7 @@
 
   import Cropper from "cropperjs";
 
-  import { useCropperStore } from "@stores/cropper.ts";
+  import { useCropperStore } from "@stores/cropper";
 
   defineOptions({ name: "ImageContainer" });
 
@@ -88,19 +88,19 @@
 
     if (!imageBlob) return;
 
-    // const imageItem = {
-    //   id: cropperStore.imageHistory.length,
-    //   blob: imageBlob,
-    //   filters: cropperStore.previewImageFilters,
-    // };
+    const imageItem = {
+      id: cropperStore.imageHistory.length,
+      blob: imageBlob,
+      filters: { ...cropperStore.previewImageFilters },
+    };
 
-    cropperStore.addToHistory(imageBlob);
+    cropperStore.addToHistory(imageItem);
 
     initCropper();
   }
 
   function resetAction() {
-    cropperStore.resetHistory();
+    cropperStore.resetActions();
   }
 
   function undoAction() {
