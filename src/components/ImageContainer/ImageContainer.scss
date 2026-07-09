@@ -1,6 +1,10 @@
 .image-container {
-  :deep(cropper-canvas) {
-    height: 600px;
-    background-repeat: unset;
+  &__canvas {
+    height: 500px;
+
+    :deep(cropper-canvas) {
+      height: 100%;
+      background-repeat: unset;
+    }
   }
 }

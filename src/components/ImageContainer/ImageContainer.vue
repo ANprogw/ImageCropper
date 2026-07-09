@@ -90,7 +90,6 @@
   );
 
   onMounted(() => {
-    console.log(imageContainerRef.value!.className);
     initCropper({
       imageRef: imageRef.value!,
       imageContainerClassName: imageContainerRef.value!.className,

@@ -1,7 +1,7 @@
 <template>
   <v-container class="image-filters">
     <v-row>
-      <v-col col="12">
+      <v-col col="12" mt-2>
         <v-slider
           v-model="cropperStore.previewImageFilters.brightness"
           label="Brightness"
