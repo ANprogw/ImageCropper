@@ -14,6 +14,7 @@ Stack:
 - You can preview filters in a real-time before applying it. Or you can reset them if you don't like the result, choice is yours.
 - Filters are applied immediately, so you can "stack" filters on your image.
 - **useCropper** composable contains all library-related code, in case library gets deprecated.
+- AI was used to create some functions, but was always double-checked.
 
 ## Trade-offs
 
