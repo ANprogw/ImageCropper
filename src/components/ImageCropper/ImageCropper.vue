@@ -15,7 +15,7 @@
 
         <v-btn color="primary" @click="openFilePicker">Choose image</v-btn>
         <v-btn
-          color="secondary"
+          color="primary"
           :disabled="!cropperStore.currentImage"
           @click="downloadImage"
         >

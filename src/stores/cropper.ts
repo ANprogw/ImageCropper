@@ -10,8 +10,6 @@ const defaultImageFilters: IImageFilters = {
 };
 
 export const useCropperStore = defineStore("cropper", () => {
-  const cropperInstance = ref();
-
   const currentImage = ref<IImageItem | null>(null);
   const imageHistory = ref<IImageItem[]>([]);
   const previewImageFilters = ref<IImageFilters>({ ...defaultImageFilters });
@@ -99,7 +97,6 @@ export const useCropperStore = defineStore("cropper", () => {
   }
 
   return {
-    cropperInstance,
     currentImage,
     imageHistory,
     defaultImageFilters,

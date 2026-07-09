@@ -33,7 +33,7 @@
     </v-btn>
 
     <v-btn
-      color="secondary"
+      color="warning"
       :disabled="isResettingFiltersDisabled"
       @click="resetFilters"
     >
@@ -45,13 +45,17 @@
 <script setup lang="ts">
   import { computed, watch } from "vue";
 
-  import type { IImageFilters } from "@/types/image";
+  import useCropper from "@composables/useCropper";
 
   import { useCropperStore } from "@stores/cropper";
+
   import { deepEqual } from "@helpers/utils/helpers.util";
+
+  import type { IImageFilters } from "@/types/image";
 
   defineOptions({ name: "ImageFilters" });
 
+  const { cropperInstance, getCropperImage } = useCropper();
   const cropperStore = useCropperStore();
 
   const isApplyingFiltersDisabled = computed(() => {
@@ -75,7 +79,7 @@
       () => cropperStore.previewImageFilters.brightness,
       () => cropperStore.previewImageFilters.contrast,
       () => cropperStore.previewImageFilters.saturation,
-      () => cropperStore.cropperInstance,
+      cropperInstance,
     ],
     () => {
       previewFilters();
@@ -83,8 +87,7 @@
   );
 
   function previewFilters() {
-    const img =
-      cropperStore.cropperInstance.container.querySelector("cropper-image");
+    const img = getCropperImage();
 
     if (img) {
       img.style.filter = `

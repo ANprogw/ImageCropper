@@ -1,6 +1,6 @@
 <template>
   <div class="image-container">
-    <div class="image-container__canvas">
+    <div ref="imageContainerRef" class="image-container__canvas">
       <img ref="imageRef" :src="cropperStore.currentImageSrc" />
     </div>
 
@@ -8,7 +8,7 @@
       <v-btn
         color="primary"
         :disabled="cropperStore.isImageHistoryEmpty"
-        @click="cropImage"
+        @click="applyCrop"
       >
         Crop
       </v-btn>
@@ -43,15 +43,17 @@
 <script setup lang="ts">
   import { ref, watch, onMounted } from "vue";
 
-  import Cropper from "cropperjs";
+  import useCropper from "@composables/useCropper";
 
   import { useCropperStore } from "@stores/cropper";
 
   defineOptions({ name: "ImageContainer" });
 
+  const { initCropper, cropImage } = useCropper();
   const cropperStore = useCropperStore();
 
   const imageRef = ref<HTMLImageElement>();
+  const imageContainerRef = ref<HTMLElement>();
 
   watch(
     () => cropperStore.currentImageSrc,
@@ -59,44 +61,27 @@
       if (!cropperStore.currentImageSrc) return;
 
       imageRef.value!.onload = () => {
-        initCropper();
+        initCropper({
+          imageRef: imageRef.value!,
+          imageContainerClassName: imageContainerRef.value!.className,
+        });
       };
     },
   );
 
   onMounted(() => {
-    initCropper();
+    console.log(imageContainerRef.value!.className);
+    initCropper({
+      imageRef: imageRef.value!,
+      imageContainerClassName: imageContainerRef.value!.className,
+    });
   });
 
-  function initCropper() {
-    cropperStore.cropperInstance?.destroy();
-
-    cropperStore.cropperInstance = new Cropper(imageRef.value!, {
-      container: ".image-container__canvas",
+  function applyCrop() {
+    cropImage({
+      imageRef: imageRef.value!,
+      imageContainerClassName: imageContainerRef.value!.className,
     });
-  }
-
-  async function cropImage() {
-    const selection =
-      cropperStore.cropperInstance.container.querySelector("cropper-selection");
-
-    const canvas = await selection.$toCanvas();
-
-    const imageBlob = await new Promise<Blob | null>((resolve) => {
-      canvas.toBlob(resolve, "image/png");
-    });
-
-    if (!imageBlob) return;
-
-    const imageItem = {
-      id: cropperStore.imageHistory.length,
-      blob: imageBlob,
-      filters: { ...cropperStore.previewImageFilters },
-    };
-
-    cropperStore.addToHistory(imageItem);
-
-    initCropper();
   }
 
   function resetAction() {
