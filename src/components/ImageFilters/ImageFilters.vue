@@ -36,13 +36,16 @@
       color="secondary"
       :disabled="isResettingFiltersDisabled"
       @click="resetFilters"
-      >Reset Filters</v-btn
     >
+      Reset Filters
+    </v-btn>
   </div>
 </template>
 
 <script setup lang="ts">
   import { computed, watch } from "vue";
+
+  import type { IImageFilters } from "@/types/image";
 
   import { useCropperStore } from "@stores/cropper";
   import { deepEqual } from "@helpers/utils/helpers.util";
@@ -55,7 +58,7 @@
     if (!cropperStore.currentImage) return true;
 
     return deepEqual(
-      cropperStore.currentImage.filters,
+      cropperStore.defaultImageFilters,
       cropperStore.previewImageFilters,
     );
   });
@@ -92,16 +95,58 @@
     }
   }
 
-  function applyFilters() {
-    if (!cropperStore.currentImage) return;
+  async function generateFilteredBlob(
+    blob: Blob,
+    filters: IImageFilters,
+  ): Promise<Blob | null> {
+    const imageUrl = URL.createObjectURL(blob);
+
+    try {
+      const img = new Image();
+      img.src = imageUrl;
+
+      await img.decode();
+
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) return null;
+
+      ctx.filter = `
+        brightness(${filters.brightness}%)
+        contrast(${filters.contrast}%)
+        saturate(${filters.saturation}%)
+      `;
+
+      ctx.drawImage(img, 0, 0);
+
+      return await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(resolve, "image/png");
+      });
+    } finally {
+      URL.revokeObjectURL(imageUrl);
+    }
+  }
+
+  async function applyFilters() {
+    if (!cropperStore.currentImage?.blob) return;
+
+    const filteredBlob = await generateFilteredBlob(
+      cropperStore.currentImage.blob,
+      cropperStore.previewImageFilters,
+    );
 
     const imageItem = {
       id: cropperStore.imageHistory.length,
-      blob: cropperStore.currentImage.blob,
+      blob: filteredBlob,
       filters: { ...cropperStore.previewImageFilters },
     };
 
     cropperStore.addToHistory(imageItem);
+    resetFilters();
   }
 
   function resetFilters() {

@@ -64,55 +64,55 @@
     cropperStore.addToHistory(imageItem);
   }
 
-  async function applyImageFilters(
-    blob: Blob,
-    filters: IImageFilters,
-  ): Promise<Blob | null> {
-    const imageUrl = URL.createObjectURL(blob);
+  // async function applyImageFilters(
+  //   blob: Blob,
+  //   filters: IImageFilters,
+  // ): Promise<Blob | null> {
+  //   const imageUrl = URL.createObjectURL(blob);
 
-    try {
-      const img = new Image();
-      img.src = imageUrl;
+  //   try {
+  //     const img = new Image();
+  //     img.src = imageUrl;
 
-      await img.decode();
+  //     await img.decode();
 
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
+  //     const canvas = document.createElement("canvas");
+  //     canvas.width = img.width;
+  //     canvas.height = img.height;
 
-      const ctx = canvas.getContext("2d");
+  //     const ctx = canvas.getContext("2d");
 
-      if (!ctx) return null;
+  //     if (!ctx) return null;
 
-      ctx.filter = `
-        brightness(${filters.brightness}%)
-        contrast(${filters.contrast}%)
-        saturate(${filters.saturation}%)
-      `;
+  //     ctx.filter = `
+  //       brightness(${filters.brightness}%)
+  //       contrast(${filters.contrast}%)
+  //       saturate(${filters.saturation}%)
+  //     `;
 
-      ctx.drawImage(img, 0, 0);
+  //     ctx.drawImage(img, 0, 0);
 
-      return await new Promise<Blob | null>((resolve) => {
-        canvas.toBlob(resolve, "image/png");
-      });
-    } finally {
-      URL.revokeObjectURL(imageUrl);
-    }
-  }
+  //     return await new Promise<Blob | null>((resolve) => {
+  //       canvas.toBlob(resolve, "image/png");
+  //     });
+  //   } finally {
+  //     URL.revokeObjectURL(imageUrl);
+  //   }
+  // }
 
   async function downloadImage() {
-    const imageItem = cropperStore.currentImage;
+    if (!cropperStore.currentImage?.blob) return;
 
-    if (!imageItem) return;
+    // const filteredBlob = await applyImageFilters(
+    //   cropperStore.currentImage.blob,
+    //   cropperStore.currentImage.filters,
+    // );
 
-    const filteredBlob = await applyImageFilters(
-      imageItem.blob,
-      imageItem.filters,
-    );
+    // if (!filteredBlob) return;
 
-    if (!filteredBlob) return;
+    // const url = URL.createObjectURL(filteredBlob);
 
-    const url = URL.createObjectURL(filteredBlob);
+    const url = URL.createObjectURL(cropperStore.currentImage.blob);
 
     const a = document.createElement("a");
     a.href = url;

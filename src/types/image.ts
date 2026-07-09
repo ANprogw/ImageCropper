@@ -6,6 +6,6 @@ export interface IImageFilters {
 
 export interface IImageItem {
   id: number;
-  blob: Blob;
+  blob: Blob | null;
   filters: IImageFilters;
 }

@@ -17,7 +17,9 @@ export const useCropperStore = defineStore("cropper", () => {
   const previewImageFilters = ref<IImageFilters>({ ...defaultImageFilters });
 
   const currentImageSrc = computed(() =>
-    currentImage.value ? URL.createObjectURL(currentImage.value.blob) : "",
+    currentImage.value?.blob
+      ? URL.createObjectURL(currentImage.value.blob)
+      : "",
   );
   const currentImageIndex = computed(() =>
     imageHistory.value.findIndex((item) => item === currentImage.value),
@@ -75,8 +77,11 @@ export const useCropperStore = defineStore("cropper", () => {
       return;
     }
 
-    currentImage.value = imageHistory.value[currentImageIndex.value - 1];
-    previewImageFilters.value = { ...currentImage.value.filters };
+    const newCurrentImage = imageHistory.value[currentImageIndex.value - 1];
+    const newPreviewImageFilters = currentImage.value!.filters;
+
+    currentImage.value = newCurrentImage;
+    previewImageFilters.value = newPreviewImageFilters;
   }
 
   function redoAction() {
@@ -84,8 +89,13 @@ export const useCropperStore = defineStore("cropper", () => {
       return;
     }
 
-    currentImage.value = imageHistory.value[currentImageIndex.value + 1];
-    previewImageFilters.value = { ...currentImage.value.filters };
+    const newCurrentImage = imageHistory.value[currentImageIndex.value + 1];
+    const newPreviewImageFilters = imageHistory.value[
+      currentImageIndex.value + 2
+    ]?.filters || { ...defaultImageFilters };
+
+    currentImage.value = newCurrentImage;
+    previewImageFilters.value = newPreviewImageFilters;
   }
 
   return {
