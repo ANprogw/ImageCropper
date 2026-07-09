@@ -1,43 +1,63 @@
 <template>
-  <div class="image-container">
-    <div ref="imageContainerRef" class="image-container__canvas">
-      <img ref="imageRef" :src="cropperStore.currentImageSrc" />
-    </div>
+  <v-container class="image-container">
+    <v-row>
+      <v-col col="12">
+        <div ref="imageContainerRef" class="image-container__canvas">
+          <img ref="imageRef" :src="cropperStore.currentImageSrc" />
+        </div>
+      </v-col>
+    </v-row>
 
-    <v-container>
-      <v-btn
-        color="primary"
-        :disabled="cropperStore.isImageHistoryEmpty"
-        @click="applyCrop"
-      >
-        Crop
-      </v-btn>
+    <v-row>
+      <v-col col="3">
+        <v-btn
+          block
+          color="primary"
+          size="large"
+          :disabled="cropperStore.isImageHistoryEmpty"
+          @click="applyCrop"
+        >
+          Crop
+        </v-btn>
+      </v-col>
 
-      <v-btn
-        color="warning"
-        :disabled="cropperStore.isResetActionsDisabled"
-        @click="resetAction"
-      >
-        Reset
-      </v-btn>
+      <v-col col="3">
+        <v-btn
+          block
+          color="warning"
+          size="large"
+          :disabled="cropperStore.isResetActionsDisabled"
+          @click="resetAction"
+        >
+          Reset
+        </v-btn>
+      </v-col>
 
-      <v-btn
-        color="secondary"
-        :disabled="cropperStore.isUndoActionDisabled"
-        @click="undoAction"
-      >
-        Undo
-      </v-btn>
+      <v-col col="3">
+        <v-btn
+          block
+          color="secondary"
+          size="large"
+          :disabled="cropperStore.isUndoActionDisabled"
+          @click="undoAction"
+        >
+          Undo
+        </v-btn>
+      </v-col>
 
-      <v-btn
-        color="secondary"
-        :disabled="cropperStore.isRedoActionDisabled"
-        @click="redoAction"
-      >
-        Redo
-      </v-btn>
-    </v-container>
-  </div>
+      <v-col col="3">
+        <v-btn
+          block
+          color="secondary"
+          size="large"
+          :disabled="cropperStore.isRedoActionDisabled"
+          @click="redoAction"
+        >
+          Redo
+        </v-btn>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup lang="ts">

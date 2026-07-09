@@ -1,45 +1,69 @@
 <template>
-  <div class="image-filters">
-    <v-slider
-      v-model="cropperStore.previewImageFilters.brightness"
-      label="Brightness"
-      :step="1"
-      :max="200"
-      thumb-label
-    />
+  <v-container class="image-filters">
+    <v-row>
+      <v-col col="12">
+        <v-slider
+          v-model="cropperStore.previewImageFilters.brightness"
+          label="Brightness"
+          :step="1"
+          :max="200"
+          thumb-label
+        />
+      </v-col>
+    </v-row>
 
-    <v-slider
-      v-model="cropperStore.previewImageFilters.contrast"
-      label="Contrast"
-      :step="1"
-      :max="200"
-      thumb-label
-    />
+    <v-row>
+      <v-col col="12">
+        <v-slider
+          v-model="cropperStore.previewImageFilters.contrast"
+          label="Contrast"
+          :step="1"
+          :max="200"
+          thumb-label
+        />
+      </v-col>
+    </v-row>
 
-    <v-slider
-      v-model="cropperStore.previewImageFilters.saturation"
-      label="Saturation"
-      :step="1"
-      :max="200"
-      thumb-label
-    />
+    <v-row>
+      <v-col col="12">
+        <v-slider
+          v-model="cropperStore.previewImageFilters.saturation"
+          label="Saturation"
+          :step="1"
+          :max="200"
+          thumb-label
+        />
+      </v-col>
+    </v-row>
 
-    <v-btn
-      color="primary"
-      :disabled="isApplyingFiltersDisabled"
-      @click="applyFilters"
-    >
-      Apply Filters
-    </v-btn>
+    <v-row>
+      <v-col col="12">
+        <v-btn
+          block
+          color="primary"
+          size="large"
+          :disabled="isApplyingFiltersDisabled"
+          @click="applyFilters"
+        >
+          Apply Filters
+        </v-btn>
+      </v-col>
+    </v-row>
 
-    <v-btn
-      color="warning"
-      :disabled="isResettingFiltersDisabled"
-      @click="resetFilters"
-    >
-      Reset Filters
-    </v-btn>
-  </div>
+    <v-row>
+      <v-col col="12">
+        <v-btn
+          block
+          color="warning"
+          size="large"
+          :disabled="isResettingFiltersDisabled"
+          @click="resetFilters"
+        >
+          Reset Filters
+        </v-btn>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup lang="ts">

@@ -1,29 +1,43 @@
 <template>
-  <div class="image-cropper">
-    <v-container>
-      <ImageContainer />
-      <ImageFilters />
+  <v-container class="image-cropper">
+    <input
+      ref="fileInput"
+      type="file"
+      accept="image/*"
+      hidden
+      @change="uploadImage"
+    />
 
-      <v-container>
-        <input
-          ref="fileInput"
-          type="file"
-          accept="image/*"
-          hidden
-          @change="uploadImage"
-        />
+    <v-row>
+      <v-col>
+        <v-btn block color="primary" size="x-large" @click="openFilePicker">
+          Choose image
+        </v-btn>
+      </v-col>
 
-        <v-btn color="primary" @click="openFilePicker">Choose image</v-btn>
+      <v-col>
         <v-btn
+          block
           color="primary"
+          size="x-large"
           :disabled="!cropperStore.currentImage"
           @click="downloadImage"
         >
           Download
         </v-btn>
-      </v-container>
-    </v-container>
-  </div>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col cols="8">
+        <ImageContainer />
+      </v-col>
+
+      <v-col cols="4">
+        <ImageFilters />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup lang="ts">
