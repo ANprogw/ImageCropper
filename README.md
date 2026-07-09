@@ -11,7 +11,7 @@ Stack:
 ## Key Decisions
 
 - Non-destructive edits, it works by storing your image data alongside applied filters, so you can get to any point in history of your decisions using **RESET**, **UNDO** and **REDO** actions
-- You can preview filters in a real-time before applying it. Or you can reset the if you don't like the result, choice is yours.
+- You can preview filters in a real-time before applying it. Or you can reset them if you don't like the result, choice is yours.
 - Filters are applied immediately, so you can "stack" filters on your image.
 - **useCropper** composable contains all library-related code, in case library gets deprecated.
 
